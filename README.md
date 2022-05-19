@@ -1,4 +1,4 @@
-# A Flutter material DropdownButton package.
+# A Flutter material DropdownButton Plus package.
 
 Getting started 🍺:
 

@@ -9,10 +9,16 @@ typedef MenuIndexedWidgetBuilder = Widget Function(
   bool select,
 );
 
+typedef MenuFocusWidgetBuilder = Widget Function(
+  BuildContext context,
+  bool hasFocus,
+);
+
 /// DropdownView
 class DropdownView<T> extends StatefulWidget {
   final bool isDropdown;
   final bool forceWidth;
+  final T? initValue;
   final List<T> items;
 
   /// item Padding
@@ -37,18 +43,23 @@ class DropdownView<T> extends StatefulWidget {
   /// 内容区域外，是否绘制背景层。
   final bool isOutsideShadow;
 
+  /// [DropdownButton.icon]
   final Widget? icon;
+  final Widget? iconSelect;
+  final MenuFocusWidgetBuilder? hintBuilder;
+  final Widget? disabledHint;
 
   final VoidCallback? onTap;
   final ValueChanged<T>? onChanged;
-  final MenuIndexedWidgetBuilder selectedItemBuilder;
   final MenuIndexedWidgetBuilder itemBuilder;
+  final MenuIndexedWidgetBuilder? selectedItemBuilder;
 
   const DropdownView({
     Key? key,
+    this.initValue,
     required this.items,
-    required this.selectedItemBuilder,
     required this.itemBuilder,
+    this.selectedItemBuilder,
     this.onTap,
     this.onChanged,
     this.itemPadding,
@@ -62,7 +73,10 @@ class DropdownView<T> extends StatefulWidget {
     this.isOutsideShadow = false,
     this.dropdownColor,
     this.borderRadius,
+    this.hintBuilder,
+    this.disabledHint,
     this.icon,
+    this.iconSelect,
     int elevation = 8,
   })  : elevation = isOutsideShadow ? 0 : elevation,
         super(key: key);
@@ -96,7 +110,19 @@ class _DropdownViewState<T> extends State<DropdownView<T>> {
         Theme.of(context).scaffoldBackgroundColor;
   }
 
+  /// select color
   Color? get color => _toggle ? Theme.of(context).primaryColor : null;
+
+  /// finally icon
+  Widget? get _icon {
+    if (widget.icon != null && widget.iconSelect != null) {
+      return _toggle ? widget.iconSelect : widget.icon;
+    }
+    return Icon(
+      _toggle ? Icons.arrow_drop_up : Icons.arrow_drop_down,
+      color: color,
+    );
+  }
 
   /// 焦点状态
   bool _toggle = false;
@@ -175,32 +201,34 @@ class _DropdownViewState<T> extends State<DropdownView<T>> {
         dropdownColor: const Color(0x80000000),
         itemBackgroundColor: _itemBackgroundColor,
         unselectItemBackgroundColor: _unselectItemBackgroundColor,
+        initValue: widget.initValue,
         items: widget.items,
         itemBuilder: widget.itemBuilder,
         selectedItemBuilder: widget.selectedItemBuilder,
         itemHeight: widget.itemHeight,
         itemPadding: widget.itemPadding,
         elevation: widget.elevation,
+        borderRadius: widget.borderRadius,
         menuMaxHeight: maxHeight(),
         onTap: _onTap,
         onChanged: widget.onChanged,
-        icon: widget.icon ??
-            Icon(
-              _toggle ? Icons.arrow_drop_up : Icons.arrow_drop_down,
-              color: color,
-            ),
+        hint: widget.hintBuilder,
+        disabledHint: widget.disabledHint,
+        icon: _icon,
       ),
     );
   }
 }
 
 class _DropdownMenu<T> extends StatefulWidget {
+  final T? initValue;
   final List<T> items;
   final bool isDropdown;
   final bool forceWidth;
-  final MenuIndexedWidgetBuilder selectedItemBuilder;
   final MenuIndexedWidgetBuilder itemBuilder;
-  final Widget? hint;
+  final MenuIndexedWidgetBuilder? selectedItemBuilder;
+  final MenuFocusWidgetBuilder? hint;
+  final Widget? disabledHint;
   final Widget? icon;
   final double? menuMaxHeight;
   final double? itemHeight;
@@ -235,11 +263,13 @@ class _DropdownMenu<T> extends StatefulWidget {
 
   const _DropdownMenu({
     Key? key,
+    this.initValue,
     required this.items,
     required this.itemBuilder,
-    required this.selectedItemBuilder,
+    this.selectedItemBuilder,
     this.icon,
     this.hint,
+    this.disabledHint,
     this.isDropdown = false,
     this.forceWidth = false,
     this.isOutsideShadow = false,
@@ -269,9 +299,7 @@ class _DropdownMenuState<T> extends State<_DropdownMenu> {
   @override
   void initState() {
     super.initState();
-    if (widget.items.isNotEmpty) {
-      dropdownValue = widget.items.first;
-    }
+    dropdownValue = widget.initValue;
   }
 
   @override
@@ -279,7 +307,8 @@ class _DropdownMenuState<T> extends State<_DropdownMenu> {
     return menu.DropdownButton<T>(
       isDropdown: widget.isDropdown,
       forceWidth: widget.forceWidth,
-      hint: widget.hint,
+      hint: widget.hint == null ? null : widget.hint!(context, widget.isToggle),
+      disabledHint: widget.disabledHint,
       value: dropdownValue,
       icon: widget.icon,
       focusNode: widget.focusNode,
@@ -320,14 +349,17 @@ class _DropdownMenuState<T> extends State<_DropdownMenu> {
 
   /// 选中的菜单
   List<menu.DropdownMenuItem<T>> selectedItems() {
+    if (widget.selectedItemBuilder == null) {
+      return <menu.DropdownMenuItem<T>>[];
+    }
     return widget.items.map((value) {
       return menu.DropdownMenuItem<T>(
         value: value,
         child: Builder(
-          builder: (context) => widget.selectedItemBuilder(
+          builder: (context) => widget.selectedItemBuilder!(
             context,
             widget.items.indexOf(value),
-            widget.isToggle && dropdownValue == value,
+            widget.isToggle,
           ),
         ),
       );

@@ -3,7 +3,6 @@ const filterOption = <String>[''];
 
 /// 综合排序
 const filterSort = <String>[
-  '综合排序',
   '销量最高',
   '距离优先',
   '速度优先',

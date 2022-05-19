@@ -49,11 +49,92 @@ class _DropdownPageState extends State<DropdownPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            /// Basic Flutter SDK Material DropdownButton
+            const Padding(
+              padding: EdgeInsets.all(16),
+              child: Text(
+                'Basic: DropdownButton',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+            ),
+
+            Material(
+              color: Theme.of(context).backgroundColor,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    plus.DropdownView<String>(
+                      items: filterSort,
+                      itemPadding: EdgeInsets.zero,
+                      itemBuilder: (_, index, select) => ItemMenuString(
+                        label: filterSort[index],
+                        select: select,
+                        showIndicator: false,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                      ),
+                      selectedItemBuilder: (_, index, select) => ItemMenuHeader(
+                        label: filterSort[index],
+                        select: select,
+                      ),
+                      hintBuilder: (context, focus) => hintWidgetBuilder(
+                        context,
+                        focus,
+                        '点这里筛选',
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            /// Plus: Pinned
+            const Padding(
+              padding: EdgeInsets.all(16),
+              child: Text(
+                'Pinned',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+            ),
+
+            Material(
+              color: Theme.of(context).backgroundColor,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    plus.DropdownView<String>(
+                      isDropdown: true,
+                      items: filterStatus,
+                      itemPadding: EdgeInsets.zero,
+                      itemBuilder: (_, index, select) => ItemMenuString(
+                        label: filterStatus[index],
+                        select: select,
+                        showIndicator: false,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                      ),
+                      selectedItemBuilder: (_, index, select) => ItemMenuHeader(
+                        label: filterStatus[index],
+                        select: select,
+                      ),
+                      hintBuilder: (context, focus) => hintWidgetBuilder(
+                        context,
+                        focus,
+                        '商家特色',
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
             /// Plus
             const Padding(
               padding: EdgeInsets.all(16),
               child: Text(
-                'Plus',
+                'Plus:',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
             ),
@@ -61,52 +142,6 @@ class _DropdownPageState extends State<DropdownPage> {
               onType: _onType,
               onOption: _onOption,
               onStatus: _onStatus,
-            ),
-
-            const SizedBox(height: 16),
-
-            /// Basic Flutter SDK Material DropdownButton
-            const Padding(
-              padding: EdgeInsets.all(16),
-              child: Text(
-                'Basic DropdownButton',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-            ),
-
-            Material(
-              color: Theme.of(context).backgroundColor,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  plus.DropdownView<String>(
-                    items: filterSort,
-                    itemPadding: EdgeInsets.zero,
-                    itemBuilder: (_, index, select) => ItemMenuString(
-                      label: filterSort[index],
-                      select: select,
-                      showIndicator: false,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                    ),
-                    selectedItemBuilder: (_, index, select) => ItemMenuHeader(
-                      label: filterSort[index],
-                    ),
-                  ),
-                  plus.DropdownView<String>(
-                    items: filterStatus,
-                    itemPadding: EdgeInsets.zero,
-                    itemBuilder: (_, index, select) => ItemMenuString(
-                      label: filterStatus[index],
-                      select: select,
-                      showIndicator: false,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                    ),
-                    selectedItemBuilder: (_, index, select) => ItemMenuHeader(
-                      label: filterStatus[index],
-                    ),
-                  ),
-                ],
-              ),
             ),
           ],
         ),

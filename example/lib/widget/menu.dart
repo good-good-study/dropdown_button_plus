@@ -1,5 +1,24 @@
 import 'package:flutter/material.dart';
 
+/// hint
+Widget hintWidgetBuilder(
+  BuildContext context,
+  bool focus,
+  String hint, {
+  EdgeInsets padding = EdgeInsets.zero,
+}) {
+  return Padding(
+    padding: padding,
+    child: Text(
+      hint,
+      style: TextStyle(
+        fontSize: 14,
+        color: focus ? Theme.of(context).primaryColor : Colors.black,
+      ),
+    ),
+  );
+}
+
 /// 菜单一级分类
 class ItemMenuHeader extends StatelessWidget {
   final String label;
@@ -17,7 +36,7 @@ class ItemMenuHeader extends StatelessWidget {
       label,
       style: TextStyle(
         fontSize: 14,
-        color: select ? Theme.of(context).primaryColor : null,
+        color: select ? Theme.of(context).primaryColor : Colors.black,
       ),
     );
   }
@@ -60,7 +79,7 @@ class ItemMenuString extends StatelessWidget {
             label,
             style: TextStyle(
               fontSize: 14,
-              color: select ? Theme.of(context).primaryColor : null,
+              color: select ? Theme.of(context).primaryColor : Colors.black,
             ),
           ),
         ),

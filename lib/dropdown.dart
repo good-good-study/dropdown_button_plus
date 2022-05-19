@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:io';
 import 'dart:math' as math;
+import 'dart:math';
 import 'dart:ui' show window;
 
 import 'package:flutter/foundation.dart';
@@ -363,7 +365,9 @@ class _DropdownMenuState<T> extends State<_DropdownMenu<T>> {
           borderRadius: widget.borderRadius,
           // This offset is passed as a callback, not a value, because it must
           // be retrieved at paint time (after layout), not at build time.
-          getSelectedItemOffset: () => route.getItemOffset(route.selectedIndex),
+          getSelectedItemOffset: () => route.getItemOffset(
+            route.selectedIndex ?? 0,
+          ),
         ),
         child: Semantics(
           scopesRoute: true,
@@ -376,10 +380,13 @@ class _DropdownMenuState<T> extends State<_DropdownMenu<T>> {
             textStyle: route.style,
             child: ScrollConfiguration(
               behavior: ScrollConfiguration.of(context).copyWith(
-                // scrollbars: false,
-                // overscroll: false,
+                scrollbars: true,
+                overscroll: true,
                 physics: const BouncingScrollPhysics(),
-                platform: TargetPlatform.iOS,
+                platform:
+                    (!kIsWeb && (Platform.isAndroid || Platform.isFuchsia))
+                        ? TargetPlatform.iOS
+                        : defaultTargetPlatform,
               ),
               child: PrimaryScrollController(
                 controller: widget.route.scrollController!,
@@ -400,6 +407,7 @@ class _DropdownMenuRouteLayout<T> extends SingleChildLayoutDelegate {
     required this.buttonRect,
     required this.route,
     required this.textDirection,
+    required this.bottom,
     this.isDropdown = false,
     this.forceWidth = false,
   });
@@ -411,6 +419,9 @@ class _DropdownMenuRouteLayout<T> extends SingleChildLayoutDelegate {
   /// 默认为 false , flutter sdk 自带的效果
   /// 设置为 true ，菜单贴在锚点的下方
   final bool isDropdown;
+
+  /// 设备屏幕底部的位置，即屏幕高度。
+  final double bottom;
 
   /// 强制撑满宽度
   final bool forceWidth;
@@ -428,6 +439,15 @@ class _DropdownMenuRouteLayout<T> extends SingleChildLayoutDelegate {
     if (route.menuMaxHeight != null && route.menuMaxHeight! <= maxHeight) {
       maxHeight = route.menuMaxHeight!;
     }
+
+    /// 这里重新计算了下安全高度，使得menu不至于紧贴屏幕底部。
+    if (isDropdown) {
+      maxHeight = max(
+        0.0,
+        min(maxHeight, bottom - buttonRect.top - 1.5 * _kMenuItemHeight),
+      );
+    }
+
     // The width of a menu should be at most the view width. This ensures that
     // the menu does not extend past the left and right edges of the screen.
     /// 默认为button的宽度，forceWidth 为true时，宽度为允许的最大宽度
@@ -447,7 +467,7 @@ class _DropdownMenuRouteLayout<T> extends SingleChildLayoutDelegate {
     final _MenuLimits menuLimits = route.getMenuLimits(
       buttonRect,
       size.height,
-      isDropdown ? 0 : route.selectedIndex,
+      isDropdown ? 0 : route.selectedIndex ?? 0,
     );
 
     assert(() {
@@ -542,7 +562,7 @@ class _DropdownRoute<T> extends PopupRoute<_DropdownRouteResult<T>> {
   final List<_MenuItem<T>> items;
   final EdgeInsetsGeometry padding;
   final Rect buttonRect;
-  final int selectedIndex;
+  final int? selectedIndex;
   final int elevation;
   final CapturedThemes capturedThemes;
   final TextStyle style;
@@ -656,7 +676,7 @@ class _DropdownRoute<T> extends PopupRoute<_DropdownRouteResult<T>> {
         math.max(availableHeight - _kMenuItemHeight, buttonBottom);
 
     double menuTop = (buttonTop - selectedItemOffset) -
-        (itemHeights[selectedIndex] - buttonRect.height) / 2.0;
+        (itemHeights[selectedIndex ?? 0] - buttonRect.height) / 2.0;
     double preferredMenuHeight = kMaterialListPadding.vertical;
     if (items.isNotEmpty) {
       preferredMenuHeight +=
@@ -683,15 +703,20 @@ class _DropdownRoute<T> extends PopupRoute<_DropdownRouteResult<T>> {
       menuTop = menuBottom - menuHeight;
     }
 
-    if (menuBottom - itemHeights[selectedIndex] / 2.0 <
+    if (menuBottom - itemHeights[selectedIndex ?? 0] / 2.0 <
         buttonBottom - buttonRect.height / 2.0) {
       menuBottom = buttonBottom -
           buttonRect.height / 2.0 +
-          itemHeights[selectedIndex] / 2.0;
+          itemHeights[selectedIndex ?? 0] / 2.0;
       menuTop = menuBottom - menuHeight;
     }
 
     double scrollOffset = 0;
+
+    if (isDropdown) {
+      final overlayHeight = (menuBottom - buttonRect.bottom);
+      scrollOffset = max(0.0, selectedItemOffset - overlayHeight);
+    } else
     // If all of the menu items will not fit within availableHeight then
     // compute the scroll offset that will line the selected menu item up
     // with the select item. This is only done when the menu is first
@@ -701,6 +726,7 @@ class _DropdownRoute<T> extends PopupRoute<_DropdownRouteResult<T>> {
     if (preferredMenuHeight > computedMaxHeight) {
       // The offset should be zero if the selected item is in view at the beginning
       // of the menu. Otherwise, the scroll offset should center the item if possible.
+      // scrollOffset = math.max(0.0, selectedItemOffset - (buttonTop - menuTop));
       scrollOffset = math.max(0.0, selectedItemOffset - (buttonTop - menuTop));
       // If the selected item's scroll offset is greater than the maximum scroll offset,
       // set it instead to the maximum allowed scroll offset.
@@ -740,7 +766,7 @@ class _DropdownRoutePage<T> extends StatelessWidget {
   final List<_MenuItem<T>>? items;
   final EdgeInsetsGeometry padding;
   final Rect buttonRect;
-  final int selectedIndex;
+  final int? selectedIndex;
   final int elevation;
   final CapturedThemes capturedThemes;
   final TextStyle? style;
@@ -783,7 +809,7 @@ class _DropdownRoutePage<T> extends StatelessWidget {
       final _MenuLimits menuLimits = route.getMenuLimits(
         buttonRect,
         constraints.maxHeight,
-        isDropdown ? 0 : selectedIndex,
+        selectedIndex ?? 0,
       );
       route.scrollController =
           ScrollController(initialScrollOffset: menuLimits.scrollOffset);
@@ -819,6 +845,7 @@ class _DropdownRoutePage<T> extends StatelessWidget {
               textDirection: textDirection,
               isDropdown: isDropdown,
               forceWidth: forceWidth,
+              bottom: MediaQuery.of(context).size.height,
             ),
             child: capturedThemes.wrap(menu),
           );
@@ -1477,7 +1504,7 @@ class _DropdownButtonState<T> extends State<DropdownButton<T>>
       items: menuItems,
       buttonRect: menuMargin.resolve(textDirection).inflateRect(itemRect),
       padding: widget.itemPadding ?? _kMenuItemPadding.resolve(textDirection),
-      selectedIndex: _selectedIndex ?? 0,
+      selectedIndex: _selectedIndex,
       elevation: widget.elevation,
       capturedThemes:
           InheritedTheme.capture(from: context, to: navigator.context),
@@ -1647,7 +1674,7 @@ class _DropdownButtonState<T> extends State<DropdownButton<T>>
         padding: padding.resolve(Directionality.of(context)),
         height: widget.isDense ? _denseButtonHeight : null,
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          // mainAxisAlignment: MainAxisAlignment.spaceBetween,
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             if (widget.isExpanded)
