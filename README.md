@@ -6,7 +6,7 @@ Add the flowing to your `pubspec.yaml`:
 
 ```java
 dependencies:
-  dropdown_button_plus: any
+  dropdown_button_plus: 0.0.2
 ```
 ## import
 
@@ -27,14 +27,50 @@ plus.DropdownView<String>(
   ),
   selectedItemBuilder: (_, index, select) => ItemMenuHeader(
     label: filters[index],
+    select: select,
+  ),
+  hintBuilder: (context, focus) => hintWidgetBuilder(
+    context,
+    focus,
+    'Dropdown',
   ),
 ),
 ```
+![basic](https://github.com/good-good-study/dropdown_button_plus/blob/master/example/ui/basic.jpg)
 
-## Plus : 
-### 1.dropdown at button with shadow.
+
+## Plus Pinned:
+
 ```java
 plus.DropdownView<String>(
+  isDropdown: true,
+  items: filters,
+  itemPadding: EdgeInsets.zero,
+  itemBuilder: (_, index, select) => ItemMenuString(
+    label: filterStatus[index],
+    select: select,
+    showIndicator: false,
+    mainAxisAlignment: MainAxisAlignment.center,
+  ),
+  selectedItemBuilder: (_, index, select) => ItemMenuHeader(
+    label: filters[index],
+    select: select,
+  ),
+  hintBuilder: (context, focus) => hintWidgetBuilder(
+    context,
+    focus,
+    'Pinned',
+  ),
+),
+```
+![pinned](https://github.com/good-good-study/dropdown_button_plus/blob/master/example/ui/pinned.png)
+
+
+## Plus : dropdown at button with shadow.
+
+```java
+plus.DropdownView<String>(
+  onChanged: widget.onType,
   forceWidth: true,
   isDropdown: true,
   isOutsideShadow: true,
@@ -48,10 +84,15 @@ plus.DropdownView<String>(
     label: '综合排序',
     select: select,
   ),
+  hintBuilder: (context, focus) => hintWidgetBuilder(
+    context,
+    focus,
+    '综合排序',
+  ),
 ),
 ```
 
-![plus basic](https://upload-images.jianshu.io/upload_images/16981996-78926ba2e8552dc4.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/375)
+![pinned](https://github.com/good-good-study/dropdown_button_plus/blob/master/example/ui/plus_basic.png)
 
 
 ### 2.customize
@@ -74,8 +115,14 @@ SizedBox(
       label: '对账单',
       select: select,
     ),
+    hintBuilder: (context, focus) => hintWidgetBuilder(
+      context,
+      focus,
+      '对账单',
+      padding: const EdgeInsets.only(top: kMinInteractiveDimension / 8),
+    ),
   ),
 ),
 ```
 
-![plus_customize](https://upload-images.jianshu.io/upload_images/16981996-36eb8052da1215d7.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/375)
+![pinned](https://github.com/good-good-study/dropdown_button_plus/blob/master/example/ui/plus_custom.png)
