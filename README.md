@@ -92,7 +92,7 @@ plus.DropdownView<String>(
 ),
 ```
 
-![pinned](https://github.com/good-good-study/dropdown_button_plus/blob/master/example/ui/plus_basic.png)
+![plus_basic](https://github.com/good-good-study/dropdown_button_plus/blob/master/example/ui/plus_basic.png)
 
 
 ### 2.customize
@@ -125,4 +125,4 @@ SizedBox(
 ),
 ```
 
-![pinned](https://github.com/good-good-study/dropdown_button_plus/blob/master/example/ui/plus_custom.png)
+![plus_custom](https://github.com/good-good-study/dropdown_button_plus/blob/master/example/ui/plus_custom.jpg)
