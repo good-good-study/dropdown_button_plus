@@ -1,5 +1,7 @@
 # A Flutter material DropdownButton Plus package.
 
+Suport : android、ios、web、macos、windows、linux .
+
 Getting started 🍺:
 
 Add the flowing to your `pubspec.yaml`:
