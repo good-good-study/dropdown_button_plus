@@ -1,6 +1,18 @@
 # A Flutter material DropdownButton Plus package.
 
-Suport : android、ios、web、macos、windows、linux .
+platform | enable
+-------- | -----
+Android  | ✔️
+IOS  | ✔️
+Web  | ✔️
+Macos  | ✔️
+Windows  | ✔️
+Linux | ✔️
+
+
+#### [Github](https://github.com/good-good-study/dropdown_button_plus)
+#### [pub.dev](https://pub.dev/packages/dropdown_button_plus)
+
 
 Getting started 🍺:
 
