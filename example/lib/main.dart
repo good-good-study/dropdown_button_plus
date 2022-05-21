@@ -76,10 +76,9 @@ class _DropdownPageState extends State<DropdownPage> {
                       label: filterSort[index],
                       select: select,
                     ),
-                    hintBuilder: (context, focus) => hintWidgetBuilder(
-                      context,
-                      focus,
+                    hintBuilder: (context, focus) => HintWidgetBuilder(
                       'Dropdown',
+                      focus: focus,
                     ),
                   ),
                   plus.DropdownView<String>(
@@ -96,10 +95,9 @@ class _DropdownPageState extends State<DropdownPage> {
                       label: filterStatus[index],
                       select: select,
                     ),
-                    hintBuilder: (context, focus) => hintWidgetBuilder(
-                      context,
-                      focus,
+                    hintBuilder: (context, focus) => HintWidgetBuilder(
                       'Pinned',
+                      focus: focus,
                     ),
                   ),
                 ],

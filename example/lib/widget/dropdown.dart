@@ -48,10 +48,9 @@ class _DropdownPlusViewState extends State<DropdownPlusView> {
                 label: '综合排序',
                 select: select,
               ),
-              hintBuilder: (context, focus) => hintWidgetBuilder(
-                context,
-                focus,
+              hintBuilder: (context, focus) => HintWidgetBuilder(
                 '综合排序',
+                focus: focus,
               ),
             ),
 
@@ -74,10 +73,9 @@ class _DropdownPlusViewState extends State<DropdownPlusView> {
                   label: '对账单',
                   select: select,
                 ),
-                hintBuilder: (context, focus) => hintWidgetBuilder(
-                  context,
-                  focus,
+                hintBuilder: (context, focus) => HintWidgetBuilder(
                   '对账单',
+                  focus: focus,
                   padding:
                       const EdgeInsets.only(top: kMinInteractiveDimension / 8),
                 ),
@@ -100,10 +98,9 @@ class _DropdownPlusViewState extends State<DropdownPlusView> {
                 label: '商家特色',
                 select: select,
               ),
-              hintBuilder: (context, focus) => hintWidgetBuilder(
-                context,
-                focus,
+              hintBuilder: (context, focus) => HintWidgetBuilder(
                 '商家特色',
+                focus: focus,
               ),
             ),
           ],

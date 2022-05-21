@@ -1,22 +1,31 @@
 import 'package:flutter/material.dart';
 
 /// hint
-Widget hintWidgetBuilder(
-  BuildContext context,
-  bool focus,
-  String hint, {
-  EdgeInsets padding = EdgeInsets.zero,
-}) {
-  return Padding(
-    padding: padding,
-    child: Text(
-      hint,
-      style: TextStyle(
-        fontSize: 14,
-        color: focus ? Theme.of(context).primaryColor : Colors.black,
+class HintWidgetBuilder extends StatelessWidget {
+  final String hint;
+  final bool focus;
+  final EdgeInsets padding;
+
+  const HintWidgetBuilder(
+    this.hint, {
+    Key? key,
+    this.focus = false,
+    this.padding = EdgeInsets.zero,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: padding,
+      child: Text(
+        hint,
+        style: TextStyle(
+          fontSize: 14,
+          color: focus ? Theme.of(context).primaryColor : Colors.black,
+        ),
       ),
-    ),
-  );
+    );
+  }
 }
 
 /// 菜单一级分类
